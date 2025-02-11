@@ -1,0 +1,73 @@
+{{!-- Restaurants Page --}}
+
+<nav>
+    <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/users">Users</a></li>
+        <li><a href="/collection">My Collection</a></li>
+        <li><a href="/restaurants">Restaurants</a></li>
+        <li><a href="/helpful">Helpful Information</a></li>
+    </ul>
+</nav>
+
+<h1>Restaurants List</h1>
+<p>Here are the restaurants currently in our database:</p>
+
+{{!-- Create a table --}}
+<table>
+    
+    {{!-- Header section --}}
+    <thead>
+        <tr>
+            <th>Restaurant ID</th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Cuisine Type</th>
+            <th>Rating</th>
+            <th>Review</th>
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+        {{#each data}}
+        <tr>
+            <td>{{this.restaurant_id}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.location}}</td>
+            <td>{{this.cuisine_type}}</td>
+            <td>{{this.rating}}</td>
+            <td>{{this.review}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+{{!-- Form to add a record to the table  --}}
+<h2>Adding a Restaurant to My Collection</h2>
+<p>To add a new restaurant, please enter its information below and click 'Submit'!</p>
+<form id="add-restaurant-form-ajax">
+    <label for="input-user-id">User ID: </label>
+    <input type="number" name="input-user-id" id="input-user-id" required>
+
+    <label for="input-name">Restaurant Name: </label>
+    <input type="text" name="input-name" id="input-name" required>
+    
+    <label for="input-location">Location: </label>
+    <input type="text" name="input-location" id="input-location" required>
+
+    <label for="input-cuisine-type">Cuisine Type: </label>
+    <input type="text" name="input-cuisine-type" id="input-cuisine-type" required>
+
+    <label for="input-rating">Rating: </label>
+    <input type="number" step="0.1" min="0" max="5" name="input-rating" id="input-rating">
+
+    <label for="input-review">Review: </label>
+    <textarea name="input-review" id="input-review"></textarea>
+
+    <input type="submit" value="Submit">
+</form>
+
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_restaurant.js"></script>

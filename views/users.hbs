@@ -1,0 +1,63 @@
+{{!-- Form to add a new user --}}
+
+<nav>
+    <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/users">Users</a></li>
+        <li><a href="/restaurants">Restaurants</a></li>
+        <li><a href="/helpful">Helpful Information</a></li>
+    </ul>
+</nav>
+
+
+
+<h1>New User Sign Up</h1>
+<p>Please add a username, password, and email to create your account. </p>
+
+{{!-- Create a table --}}
+<table>
+    {{!-- Header section --}}
+    <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Date Joined</th>
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+        {{#each data}}
+        <tr>
+            <td>{{this.user_id}}</td>
+            <td>{{this.username}}</td>
+            <td>{{this.user_email}}</td>
+            <td>{{this.date_joined}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+
+{{!-- Form to add a new user --}}
+<h2>Register a New User</h2>
+<p>To create a new account, please enter the following information and click 'Submit'!</p>
+<form id="add-user-form-ajax">
+    <label for="input-username">Username: </label>
+    <input type="text" name="input-username" id="input-username" required>
+
+    <label for="input-user-email">Email: </label>
+    <input type="email" name="input-user-email" id="input-user-email" required>
+
+    <label for="input-password">Password: </label>
+    <input type="password" name="input-password" id="input-password" required>
+
+    <label for="input-date-joined">Date Joined: </label>
+    <input type="date" name="input-date-joined" id="input-date-joined" required>
+
+    <input type="submit" value="Submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_user.js"></script>

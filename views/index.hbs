@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Taste City</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <!-- Custom Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">Taste City</a>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/users">Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="/restaurants">Restaurants</a></li>
+                <li class="nav-item"><a class="nav-link" href="/helpful">Helpful Information</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="text-center">Taste City</h1>
+
+        <p class="welcome-text">Welcome to Taste City! Please log in to view your collection of restaurants or navigate to the restaurant tab to see restaurants and their reviews.</p>
+
+        <!-- Login Form -->
+        <div class="login-form">
+            <h2>Login</h2>
+            <form action="/login" method="POST">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit" class="btn">Login</button>
+            </form>
+
+            <p class="new-user">New User? <a href="/register">Create an account</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
