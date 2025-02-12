@@ -102,7 +102,7 @@ app.post('/add-restaurant-ajax', function(req, res) {
             console.log(error);
             res.sendStatus(400);
         } else {
-            res.redirect('/my_collection'); // Redirect to the collection page after successful insertion
+            res.redirect('/my_collection'); 
         }
     });
 });
