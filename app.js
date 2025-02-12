@@ -63,7 +63,7 @@ app.get('/my_collection', function(req, res) {
 
 // POST ROUTES
 
-app.post('/add-user-form', function(req, res) {
+app.post('/add-user-ajax', function(req, res) {
     let data = req.body;
 
     // Capture NULL values 
@@ -84,7 +84,7 @@ app.post('/add-user-form', function(req, res) {
     });
 });
 
-app.post('/add-restaurant-form', function(req, res) {
+app.post('/add-restaurant-ajax', function(req, res) {
     let data = req.body;
 
     // Capture NULL values
