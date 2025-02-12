@@ -13,14 +13,14 @@ app.use(express.urlencoded({extended: true}))
 
 PORT = 57891;                      // Set a port number at the top so it's easy to change in the future
 
-// Database
-var db = require('./database/db-connector');
-
 // Handlebars
 const { engine } = require('express-handlebars');
 var exphbs = require('express-handlebars');     // Import express-handlebars
 app.engine('.hbs', engine({extname: ".hbs"}));  // Create an instance of the handlebars engine to process templates
 app.set('view engine', '.hbs');                 // Tell express to use the handlebars engine whenever it encounters a *.hbs file.
+
+// Database
+var db = require('./database/db-connector');
 
 // Static Files
 app.use(express.static('public'));  // We need to instantiate an express object to interact with the server in our code
@@ -32,7 +32,7 @@ app.use(express.static('public'));  // We need to instantiate an express object 
 
 // GET ROUTES
 
-app.get('/', function(req, res) {
+app.get('/index', function(req, res) {
     res.render('index'); 
 });
 
