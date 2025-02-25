@@ -60,6 +60,33 @@ app.get('/my_collection', function(req, res) {
     });
 });
 
+app.get('/test-sorting', async function(req, res) {
+    try {
+        const books = [
+            { title: "Dune", date: "02-21-2025", order_number: 2 },
+            { title: "The Hobbit", date: "02-12-2025", order_number: 1 },
+            { title: "Little Women", date: "02-19-2025", order_number: 3 }
+        ];
+
+        console.log("Sending data to sort microservice");
+
+        const response = await fetch('http://localhost:5252/sort-data', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_data: books, sortBy: "title" }) //Can Adjust the sort by with title, date, or order number. 
+        });
+
+        const sortedData = await response.json();
+        console.log("Sorted Data:", sortedData.data);  
+
+        res.json(sortedData); 
+
+    } catch (error) {
+        console.error("Sorting test error:", error);
+        res.status(500).send("Error testing sorting");
+    }
+});
+
 
 // POST ROUTES
 
@@ -137,6 +164,8 @@ app.post('/fetch-restaurants', async function(req, res) {
         }
     });
 });
+
+
 
 
 /*

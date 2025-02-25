@@ -8,13 +8,11 @@ def sort_data():
         data = request.get_json()
         user_data = data.get("user_data", []) 
         sort_by = data.get("sortBy", "name")
-        order = data.get("order", "asc")
 
-        print(f"Service requested, sorting data by '{sort_by}' in '{order}' order.")  
+        print(f"Service requested, sorting data by '{sort_by}' in ascending order.")  
 
         # Sort Data
-        reverse_order = (order == "desc")
-        sorted_data = sorted(user_data, key=lambda x: x[sort_by], reverse=reverse_order)
+        sorted_data = sorted(user_data, key=lambda x: x[sort_by])
 
         print("Sorting completed. Sending sorted data back to the client.")  
 
