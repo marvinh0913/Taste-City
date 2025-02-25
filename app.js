@@ -11,7 +11,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-PORT = 57891;                      // Set a port number at the top so it's easy to change in the future
+PORT = 57891;                                  // Set a port number at the top so it's easy to change in the future
 
 // Handlebars
 const { engine } = require('express-handlebars');
@@ -23,7 +23,7 @@ app.set('view engine', '.hbs');                 // Tell express to use the handl
 var db = require('./database/db-connector');
 
 // Static Files
-app.use(express.static('public'));  // We need to instantiate an express object to interact with the server in our code
+app.use(express.static('public'));  
 
 
 /*
@@ -107,7 +107,36 @@ app.post('/add-restaurant-ajax', function(req, res) {
     });
 });
 
+app.post('/fetch-restaurants', async function(req, res) {
+    console.log("Message accepted, fetching restaurant data from database");
 
+    let query = "SELECT * FROM Restaurants;"; 
+
+    db.pool.query(query, async function(error, rows, fields) {
+        if (error) {
+            console.error("Database error:", error);
+            return res.status(500).send("Error retrieving restaurants");
+        }
+
+        console.log(`Retrieved ${rows.length} restaurants. Sending data to sorting microservice.`);
+
+        try {
+            const response = await fetch('http://localhost:5252/sort-data', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_data: rows, ...req.body })
+            });
+
+            const data = await response.json();
+            console.log("Sorting completed. Sending sorted data to the server.");
+
+            res.json(data);
+        } catch (error) {
+            console.error("Sorting microservice error:", error);
+            res.status(500).send("Error sorting restaurants");
+        }
+    });
+});
 
 
 /*

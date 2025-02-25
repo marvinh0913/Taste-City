@@ -27,7 +27,7 @@
     </thead>
 
     {{!-- Body section --}}
-    <tbody>
+    <tbody id="restaurantsTableBody">
         {{#each data}}
         <tr>
             <td>{{this.restaurant_id}}</td>
@@ -66,6 +66,24 @@
     <input type="submit" value="Submit">
 </form>
 
+{{!-- Form to sort data--}}
+<label for="sortBy">Sort By:</label>
+<select id="sortBy">
+    <option value="name">Name</option>
+    <option value="location">Location</option>
+    <option value="cuisine_type">Cuisine Type</option>
+    <option value="rating">Rating</option>
+</select>
+
+<label for="order">Order:</label>
+<select id="order">
+    <option value="asc">Ascending</option>
+    <option value="desc">Descending</option>
+</select>
+
+<button onclick="fetchSortedRestaurants()">Sort</button>
+
 
 {{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
 <script src="./js/add_restaurant.js"></script>
+<script src="./js/sort_restaurant.js"></script>
