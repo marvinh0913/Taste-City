@@ -1,4 +1,5 @@
 // Get the objects we need to modify
+
 let addRestaurantForm = document.getElementById('add-restaurant-form-ajax');
 
 // Modify the objects we need
@@ -85,6 +86,8 @@ addRowToTable = (data) => {
     let ratingCell = document.createElement("TD");
     let reviewCell = document.createElement("TD");
 
+    let deleteCell = document.createElement("TD");
+
     // Fill the cells with correct data
     idCell.innerText = newRow.restaurant_id;
     userIdCell.innerText = newRow.user_id;
@@ -94,6 +97,12 @@ addRowToTable = (data) => {
     ratingCell.innerText = newRow.rating;
     reviewCell.innerText = newRow.review;
 
+    deleteCell = document.createElement("button");
+    deleteCell.innerHTML = "Delete";
+    deleteCell.onclick = function(){
+        deleteRestaurant(newRow.restaurant_id);
+    };
+
     // Add the cells to the row 
     row.appendChild(idCell);
     row.appendChild(userIdCell);
@@ -102,7 +111,10 @@ addRowToTable = (data) => {
     row.appendChild(cuisineTypeCell);
     row.appendChild(ratingCell);
     row.appendChild(reviewCell);
+    row.appendChild(deleteCell);
+
+    row.setAttribute('data-value', newRow.restaurant_id);
     
     // Add the row to the table
     currentTable.appendChild(row);
-};
+}

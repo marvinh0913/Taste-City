@@ -60,7 +60,7 @@ app.get('/my_collection', function(req, res) {
     });
 });
 
-app.get('/test-sorting', async function(req, res) {
+/*app.get('/test-sorting', async function(req, res) {
     try {
         const books = [
             { title: "Dune", date: "02-21-2025", order_number: 2 },
@@ -85,7 +85,7 @@ app.get('/test-sorting', async function(req, res) {
         console.error("Sorting test error:", error);
         res.status(500).send("Error testing sorting");
     }
-});
+});*/
 
 
 // POST ROUTES
@@ -162,6 +162,24 @@ app.post('/fetch-restaurants', async function(req, res) {
             console.error("Sorting microservice error:", error);
             res.status(500).send("Error sorting restaurants");
         }
+    });
+});
+
+// delete restaurants
+app.delete('/delete-restaurant-ajax/', function(req, res, next) {
+    let data = req.body;
+    let restaurantID = parseInt(data.id);
+
+    let deleteRestaurantQuery = `DELETE FROM Restaurants WHERE restaurant_id = ?`;
+
+    // Run the query to delete the restaurant
+    db.pool.query(deleteRestaurantQuery, [restaurantID], function(error, rows, fields) {
+        if (error) {
+            console.log(error);
+            return res.sendStatus(400);
+        }
+
+        res.sendStatus(204); // No content, successful deletion
     });
 });
 

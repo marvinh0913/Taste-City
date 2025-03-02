@@ -1,5 +1,7 @@
 {{!-- Restaurants Page --}}
 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
 <nav>
     <ul>
         <li><a href="/index">Home</a></li>
@@ -36,6 +38,7 @@
             <td>{{this.cuisine_type}}</td>
             <td>{{this.rating}}</td>
             <td>{{this.review}}</td>
+            <td><button onclick="deleteRestaurant({{this.restaurant_id}})">Delete</button></td>
         </tr>
         {{/each}}
     </tbody>
@@ -87,3 +90,4 @@
 {{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
 <script src="./js/add_restaurant.js"></script>
 <script src="./js/sort_restaurant.js"></script>
+<script src="./js/delete_restaurant.js"></script>
