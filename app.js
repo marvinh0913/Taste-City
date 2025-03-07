@@ -31,7 +31,6 @@ app.use(express.static('public'));
 */
 
 // GET ROUTES
-
 app.get('/index', function(req, res) {
     res.render('index'); 
 });
@@ -60,7 +59,8 @@ app.get('/my_collection', function(req, res) {
     });
 });
 
-/*app.get('/test-sorting', async function(req, res) {
+/*
+app.get('/test-sorting', async function (req, res) {
     try {
         const books = [
             { title: "Dune", date: "02-21-2025", order_number: 2 },
@@ -68,28 +68,32 @@ app.get('/my_collection', function(req, res) {
             { title: "Little Women", date: "02-19-2025", order_number: 3 }
         ];
 
-        console.log("Sending data to sort microservice");
+        console.log("Sending data to sort microservice...");
 
-        const response = await fetch('http://localhost:5252/sort-data', {
+        const response = await fetch('http://localhost:5527', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_data: books, sortBy: "title" }) //Can Adjust the sort by with title, date, or order number. 
+            body: JSON.stringify({ type: "ALPHA", items: books.map(b => b.title) })
         });
 
-        const sortedData = await response.json();
-        console.log("Sorted Data:", sortedData.data);  
+        if (!response.ok) {
+            throw new Error(`Microservice error: ${response.status}`);
+        }
 
-        res.json(sortedData); 
+        const sortedData = await response.json();
+        console.log("Sorted Data:", sortedData);
+
+        res.json(sortedData);
 
     } catch (error) {
         console.error("Sorting test error:", error);
         res.status(500).send("Error testing sorting");
     }
-});*/
+});
+*/
 
 
 // POST ROUTES
-
 app.post('/add-user-ajax', function(req, res) {
     let data = req.body;
 
@@ -135,29 +139,43 @@ app.post('/add-restaurant-ajax', function(req, res) {
 });
 
 app.post('/fetch-restaurants', async function(req, res) {
-    console.log("Message accepted, fetching restaurant data from database");
+    console.log("Fetching restaurant data from database...");
 
-    let query = "SELECT * FROM Restaurants;"; 
+    let query = "SELECT * FROM Restaurants;";
 
-    db.pool.query(query, async function(error, rows, fields) {
+    db.pool.query(query, async function(error, rows) {
         if (error) {
             console.error("Database error:", error);
             return res.status(500).send("Error retrieving restaurants");
         }
 
-        console.log(`Retrieved ${rows.length} restaurants. Sending data to sorting microservice.`);
+        console.log(`Retrieved ${rows.length} restaurants. Sorting by ${req.body.sortBy}`);
+
+        const { sortBy } = req.body;
 
         try {
-            const response = await fetch('http://localhost:5252/sort-data', {
+            // Send FULL restaurant objects to the C microservice
+            const response = await fetch('http://localhost:5527', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_data: rows, ...req.body })
+                body: JSON.stringify({
+                    type: "ALPHA",  // Assume all fields are strings
+                    sortBy: sortBy,
+                    items: rows  // Send full restaurant data
+                })
             });
 
-            const data = await response.json();
-            console.log("Sorting completed. Sending sorted data to the server.");
+            const sortedData = await response.json();
+            console.log("Received from sorting microservice:", sortedData);
 
-            res.json(data);
+            if (!sortedData.sortedItems) {
+                throw new Error("Invalid response from sorting microservice");
+            }
+
+            console.log("Final sorted response sent to frontend:", sortedData.sortedItems);
+
+            res.json({ status: "success", sortedItems: sortedData.sortedItems });
+
         } catch (error) {
             console.error("Sorting microservice error:", error);
             res.status(500).send("Error sorting restaurants");
@@ -182,8 +200,6 @@ app.delete('/delete-restaurant-ajax/', function(req, res, next) {
         res.sendStatus(204); // No content, successful deletion
     });
 });
-
-
 
 
 /*

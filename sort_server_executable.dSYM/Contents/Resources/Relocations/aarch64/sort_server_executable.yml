@@ -1,0 +1,22 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     sort_server_executable
+relocations:
+  - { offset: 0x26, size: 0x8, addend: 0x0, symName: _handle_client, symObjAddr: 0x0, symBinAddr: 0x1000029E4, symSize: 0x1A8 }
+  - { offset: 0x77, size: 0x8, addend: 0x0, symName: _handle_client, symObjAddr: 0x0, symBinAddr: 0x1000029E4, symSize: 0x1A8 }
+  - { offset: 0xE2, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x1A8, symBinAddr: 0x100002B8C, symSize: 0x13C }
+  - { offset: 0x226, size: 0x8, addend: 0x0, symName: _test_gtest, symObjAddr: 0x0, symBinAddr: 0x100002CC8, symSize: 0x8 }
+  - { offset: 0x24D, size: 0x8, addend: 0x0, symName: _global_sort_key, symObjAddr: 0x2AE8, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offset: 0x300, size: 0x8, addend: 0x0, symName: _test_gtest, symObjAddr: 0x0, symBinAddr: 0x100002CC8, symSize: 0x8 }
+  - { offset: 0x319, size: 0x8, addend: 0x0, symName: _sort_numbers, symObjAddr: 0x8, symBinAddr: 0x100002CD0, symSize: 0xFC }
+  - { offset: 0x39F, size: 0x8, addend: 0x0, symName: _sort_alpha, symObjAddr: 0x104, symBinAddr: 0x100002DCC, symSize: 0x10C }
+  - { offset: 0x425, size: 0x8, addend: 0x0, symName: _make_null_term_string, symObjAddr: 0x210, symBinAddr: 0x100002ED8, symSize: 0x4C }
+  - { offset: 0x45B, size: 0x8, addend: 0x0, symName: _parse_strings, symObjAddr: 0x25C, symBinAddr: 0x100002F24, symSize: 0x160 }
+  - { offset: 0x4F3, size: 0x8, addend: 0x0, symName: _parse_integers, symObjAddr: 0x3BC, symBinAddr: 0x100003084, symSize: 0x124 }
+  - { offset: 0x56F, size: 0x8, addend: 0x0, symName: _build_str_from_int_arr, symObjAddr: 0x4E0, symBinAddr: 0x1000031A8, symSize: 0x1E4 }
+  - { offset: 0x60C, size: 0x8, addend: 0x0, symName: _build_str_from_str, symObjAddr: 0x6C4, symBinAddr: 0x10000338C, symSize: 0x1E0 }
+  - { offset: 0x6A9, size: 0x8, addend: 0x0, symName: _parse, symObjAddr: 0x8A4, symBinAddr: 0x10000356C, symSize: 0x278 }
+  - { offset: 0x795, size: 0x8, addend: 0x0, symName: _sort_objects, symObjAddr: 0xB1C, symBinAddr: 0x1000037E4, symSize: 0x174 }
+  - { offset: 0x865, size: 0x8, addend: 0x0, symName: _compare_restaurants, symObjAddr: 0xC90, symBinAddr: 0x100003958, symSize: 0x290 }
+  - { offset: 0x8F5, size: 0x8, addend: 0x0, symName: _sort, symObjAddr: 0xF20, symBinAddr: 0x100003BE8, symSize: 0x24 }
+...

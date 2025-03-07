@@ -1,12 +1,11 @@
 async function fetchSortedRestaurants() {
     const sortBy = document.getElementById("sortBy").value;
-    const order = document.getElementById("order").value;
 
     try {
         const response = await fetch('/fetch-restaurants', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sortBy, order })
+            body: JSON.stringify({ sortBy })
         });
 
         const data = await response.json();
@@ -15,7 +14,7 @@ async function fetchSortedRestaurants() {
             const tableBody = document.getElementById("restaurantsTableBody");
             tableBody.innerHTML = ""; // Clear previous results
 
-            data.data.forEach(restaurant => {
+            data.sortedItems.forEach(restaurant => {
                 const row = `
                     <tr>
                         <td>${restaurant.restaurant_id}</td>
