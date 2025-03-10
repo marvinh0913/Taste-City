@@ -3,6 +3,7 @@ This the Taste City app, a restaurant recommendation service.
 
 Communication Contract: 
 -How to programmatically REQUEST data:
+
 To request data one could build an array like books = { title: "Dune", date: "02-21-2025", order_number: 2 },{ title: "The Hobbit", date: "02-12-2025", order_number: 1 },{ title: "Little Women", date: "02-19-2025", order_number: 3}. 
 
 Send the data to be sorted using the json format to an http post request to the local host 5527: 
