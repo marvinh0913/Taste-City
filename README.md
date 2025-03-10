@@ -21,7 +21,9 @@ Receive the JSON data via the post request from the http localhost 57891.
 
 Sort the data and send it back using an http post request: 
         sorted_data = sorted(user_data, key=lambda x: x[sort_by])
+        
         print("Sorting completed. Sending sorted data back to the client.")
+        
         return jsonify({"status": "success", "data": sorted_data})
 
 Result:          
