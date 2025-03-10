@@ -1,4 +1,4 @@
-{{!-- Restaurants Page --}}
+{{!-- My collections Page --}}
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
@@ -7,10 +7,13 @@
         <li><a href="/index">Home</a></li>
         <li><a href="/users">Users</a></li>
         <li><a href="/my_collection">My Collection</a></li>
+        <li><a href="/restaurants">Restaurants</a></li>
+        <li><a href="/help">Helpful Information</a></li>
     </ul>
 </nav>
 
 <h1>Your Restaurant Collection</h1>
+<link href="style.css" rel="stylesheet" type="text/css" />
 <p>Add and review a restaurant. Your reviews will be public for site visitors and members to view and inform their future restaurant visits </p>
 
 {{!-- Create a table --}}
@@ -38,24 +41,35 @@
             <td>{{this.cuisine_type}}</td>
             <td>{{this.rating}}</td>
             <td>{{this.review}}</td>
-            <td><button onclick="deleteRestaurant({{this.restaurant_id}})">Delete</button></td>
+            <td><button class="delete-btn" onclick="deleteRestaurant({{this.restaurant_id}})">Delete</button></td>
         </tr>
         {{/each}}
     </tbody>
 </table>
 
-{{!-- Form to add a record to the table  --}}
-<h2>Adding a Restaurant to My Collection</h2>
-<p>To add a new restaurant, please enter its information below and click 'Submit'!</p>
 <form id="add-restaurant-form-ajax">
-    <label for="input-user-id">User ID: </label>
-    <input type="number" name="input-user-id" id="input-user-id" required>
+    <label for="userSelect">User:</label>
+    <select id="userSelect" name="user_id" required>
+        <option value="">Select a User</option>
+        <!-- Options will be populated dynamically -->
+    </select>
 
     <label for="input-name">Restaurant Name: </label>
     <input type="text" name="input-name" id="input-name" required>
     
-    <label for="input-location">Location: </label>
-    <input type="text" name="input-location" id="input-location" required>
+    <input type="hidden" name="input-location" id="input-location" required>
+
+    <label for="stateSelect">State:</label>
+    <select id="stateSelect">
+        <option value="">Select a State</option>
+        <!-- Options populated dynamically -->
+    </select>
+
+    <label for="citySelect">City:</label>
+    <select id="citySelect">
+        <option value="">Select a City</option>
+        <!-- Options populated dynamically -->
+    </select>
 
     <label for="input-cuisine-type">Cuisine Type: </label>
     <input type="text" name="input-cuisine-type" id="input-cuisine-type" required>
@@ -77,11 +91,23 @@
     <option value="cuisine_type">Cuisine Type</option>
     <option value="rating">Rating</option>
 </select>
-
 <button onclick="fetchSortedRestaurants()">Sort</button>
+
+{{!-- Spell Checker Section --}}
+<section id="spellChecker">
+  <h2>Spell Checker</h2>
+  <input type="text" id="textToCheck" placeholder="Enter text to check" />
+  <button onclick="checkSpelling()">Check Spelling</button>
+  <div id="spellResults"></div>
+</section>
+
+
 
 
 {{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
 <script src="./js/add_restaurant.js"></script>
 <script src="./js/sort_restaurant.js"></script>
 <script src="./js/delete_restaurant.js"></script>
+<script src="./js/spellcheck_restaurant.js"></script>
+<script src="./js/location_restaurant.js"></script>
+<script src="./js/user_dropdown.js"></script>

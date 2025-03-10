@@ -1,5 +1,4 @@
 // Get the objects we need to modify
-
 let addRestaurantForm = document.getElementById('add-restaurant-form-ajax');
 
 // Modify the objects we need
@@ -9,7 +8,8 @@ addRestaurantForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
     // Get form fields we need to get data from
-    let inputUserId = document.getElementById("input-user-id");
+    // Remove the old input for user ID and use the select element
+    let userSelect = document.getElementById("userSelect");
     let inputName = document.getElementById("input-name");
     let inputLocation = document.getElementById("input-location");
     let inputCuisineType = document.getElementById("input-cuisine-type");
@@ -17,7 +17,7 @@ addRestaurantForm.addEventListener("submit", function (e) {
     let inputReview = document.getElementById("input-review");
 
     // Get the values from the form fields
-    let userIdValue = inputUserId.value;
+    let userIdValue = userSelect.value;
     let nameValue = inputName.value;
     let locationValue = inputLocation.value;
     let cuisineTypeValue = inputCuisineType.value;
@@ -43,16 +43,8 @@ addRestaurantForm.addEventListener("submit", function (e) {
     xhttp.onreadystatechange = () => {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
 
-            // Add the new data to the table
-            addRowToTable(xhttp.response);
-
-            // Clear the input fields for another transaction
-            inputUserId.value = '';
-            inputName.value = '';
-            inputLocation.value = '';
-            inputCuisineType.value = '';
-            inputRating.value = '';
-            inputReview.value = '';
+            // refresh the page so the new restaurant appears.
+            window.location.reload();
         }
         else if (xhttp.readyState == 4 && xhttp.status != 200) {
             console.log("There was an error with the input.");
@@ -67,7 +59,7 @@ addRestaurantForm.addEventListener("submit", function (e) {
 addRowToTable = (data) => {
 
     // Get a reference to the current table on the page
-    let currentTable = document.getElementById("restaurants-table");
+    let currentTable = document.getElementById("restaurantsTableBody");
 
     // Get the location where we should insert the new row (end of table)
     let newRowIndex = currentTable.rows.length;

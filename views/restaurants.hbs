@@ -1,0 +1,46 @@
+{{!-- Restaurants Page --}}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<nav>
+    <ul>
+        <li><a href="/index">Home</a></li>
+        <li><a href="/users">Users</a></li>
+        <li><a href="/my_collection">My Collection</a></li>
+        <li><a href="/restaurants">Restaurants</a></li>
+        <li><a href="/help">Helpful Information</a></li>
+    </ul>
+</nav>
+
+<h1>Taste City's Collection of Restaurants and Reviews</h1>
+<link href="style.css" rel="stylesheet" type="text/css" />
+<p>Below you will find a selection of restaurants reviewed by our users.</p>
+
+{{!-- Create a table --}}
+<table>
+    
+    {{!-- Header section --}}
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Restaurant Name</th>
+            <th>Location</th>
+            <th>Cuisine Type</th>
+            <th>Rating</th>
+            <th>Review</th>
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody id="reviewsTableBody">
+        {{#each data}}
+        <tr>
+            <td>{{this.username}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.location}}</td>
+            <td>{{this.cuisine_type}}</td>
+            <td>{{this.rating}}</td>
+            <td>{{this.review}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

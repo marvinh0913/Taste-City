@@ -59,39 +59,41 @@ app.get('/my_collection', function(req, res) {
     });
 });
 
-/*
-app.get('/test-sorting', async function (req, res) {
-    try {
-        const books = [
-            { title: "Dune", date: "02-21-2025", order_number: 2 },
-            { title: "The Hobbit", date: "02-12-2025", order_number: 1 },
-            { title: "Little Women", date: "02-19-2025", order_number: 3 }
-        ];
-
-        console.log("Sending data to sort microservice...");
-
-        const response = await fetch('http://localhost:5527', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type: "ALPHA", items: books.map(b => b.title) })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Microservice error: ${response.status}`);
+app.get('/api/users', (req, res) => {
+    const query = "SELECT user_id, username FROM Users";
+    db.pool.query(query, (error, rows) => {
+        if (error) {
+            console.error("Database error:", error);
+            return res.status(500).json({ error: "Database error" });
         }
-
-        const sortedData = await response.json();
-        console.log("Sorted Data:", sortedData);
-
-        res.json(sortedData);
-
-    } catch (error) {
-        console.error("Sorting test error:", error);
-        res.status(500).send("Error testing sorting");
-    }
+        res.json(rows);
+    });
 });
-*/
 
+app.get('/restaurants', (req, res) => {
+    // Define a SQL query that joins Restaurants and Users to get the username.
+    const query = `
+      SELECT 
+        Restaurants.restaurant_id, 
+        Restaurants.name, 
+        Restaurants.location, 
+        Restaurants.cuisine_type, 
+        Restaurants.rating, 
+        Restaurants.review, 
+        Users.username
+      FROM Restaurants
+      JOIN Users ON Restaurants.user_id = Users.user_id;
+    `;
+    
+    db.pool.query(query, (error, rows) => {
+      if (error) {
+        console.error("Database error:", error);
+        return res.status(500).send("Database error");
+      }
+      // Render the 'restaurants' template, passing the query results as "data".
+      res.render('restaurants', { data: rows });
+    });
+  });
 
 // POST ROUTES
 app.post('/add-user-ajax', function(req, res) {
@@ -182,6 +184,85 @@ app.post('/fetch-restaurants', async function(req, res) {
         }
     });
 });
+
+// post for spell checker
+app.post('/spellcheck', async (req, res) => {
+    console.log("Connected to the Spellchecker microservice");
+
+    try {
+      // Forward the request to the Python spellchecker microservice
+      const response = await fetch('http://localhost:3000/spellcheck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: req.body.text })
+      });
+  
+      const data = await response.json();
+
+      console.log("Successfully corrected:", data);
+  
+      // Forward the result back to the frontend
+      res.json({ status: "success", result: data.result });
+    } catch (err) {
+      console.error("Spellchecker error:", err);
+      res.status(500).json({ error: "Spellchecker service error" });
+    }
+  });
+  
+
+  // location microservice
+app.post('/add-restaurant', (req, res) => {
+    // Extract form data from the request body
+    const userId = req.body["input-user-id"];
+    const name = req.body["input-name"];
+    const location = req.body["input-location"]; // This field is now hidden and populated via dropdowns
+    const cuisineType = req.body["input-cuisine-type"];
+    const rating = req.body["input-rating"];
+    const review = req.body["input-review"];
+  
+    // SQL query to insert a new restaurant record
+    const query = `
+      INSERT INTO Restaurants (user_id, name, location, cuisine_type, rating, review)
+      VALUES (?, ?, ?, ?, ?, ?);
+    `;
+    const values = [userId, name, location, cuisineType, rating, review];
+  
+    // Execute the SQL query using your database connection pool
+    db.pool.query(query, values, (error, results) => {
+      if (error) {
+        console.error("Database error:", error);
+        return res.status(500).send("Error adding restaurant");
+      }
+      // Respond with success and optionally include the new restaurant's ID
+      res.json({ status: "success", restaurantId: results.insertId });
+    });
+});
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  console.log("Received credentials:", username, password);  // Debug log
+  
+  try {
+    const response = await fetch('http://127.0.0.1:5000/verify-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+    console.log("User verification response:", data);
+    
+    if (data.status === "success") {
+      res.redirect('/my_collection');
+    } else {
+      res.render('index', { error: data.message });
+    }
+  } catch (err) {
+    console.error("User verification error:", err);
+    res.render('index', { error: "There was an error verifying your username and password." });
+  }
+});
+  
 
 // delete restaurants
 app.delete('/delete-restaurant-ajax/', function(req, res, next) {
