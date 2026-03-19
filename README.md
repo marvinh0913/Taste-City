@@ -1,4 +1,6 @@
-This the Taste City app, a restaurant recommendation service.
+Taste City, an app built for Microservice communication.
+
+This is the Taste City app, a restaurant recommendation service. 
 
 Communication Contract: 
 
