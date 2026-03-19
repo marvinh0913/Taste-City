@@ -1,4 +1,3 @@
-# 361-Project-
 This the Taste City app, a restaurant recommendation service.
 
 Communication Contract: 
