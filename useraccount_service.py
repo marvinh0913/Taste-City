@@ -8,10 +8,10 @@ CORS(app)
 
 # Database configuration - update these with your actual credentials
 db_config = {
-    'user' : 'cs361_hoom',
-    'password' : '3121',
-    'host' : 'classmysql.engr.oregonstate.edu',
-    'database' : 'cs361_hoom'
+    'user' : '',
+    'password' : '',
+    'host' : '',
+    'database' : ''
 }
 
 @app.route('/verify-user', methods=['POST'])
