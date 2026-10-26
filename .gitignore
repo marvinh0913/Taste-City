@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Build output
+build/
+cmake-build-*/
+services/sort/sort_server
+*.dSYM/
+
+# Secrets
+.env
+
+# Editor and OS files
+.vscode/
+.DS_Store
