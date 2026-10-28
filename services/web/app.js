@@ -4,9 +4,11 @@
     SETUP
 */
 
+var path = require('path');
+
 // Express
 var express = require('express');   // We are using the express library for the web server
-var app = express(); 
+var app = express();                // Node's built-in module for building file paths that work on any OS
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
@@ -15,20 +17,27 @@ PORT = 57891;                                  // Set a port number at the top s
 
 // Handlebars
 const { engine } = require('express-handlebars');
-var exphbs = require('express-handlebars');     // Import express-handlebars
-app.engine('.hbs', engine({extname: ".hbs"}));  // Create an instance of the handlebars engine to process templates
-app.set('view engine', '.hbs');                 // Tell express to use the handlebars engine whenever it encounters a *.hbs file.
+var exphbs = require('express-handlebars');      // Import express-handlebars
+app.engine('.hbs', engine({extname: ".hbs"}));   // Create an instance of the handlebars engine to process templates
+app.set('view engine', '.hbs');                  // Tell express to use the handlebars engine whenever it encounters a *.hbs file.
+app.set('views', path.join(__dirname, 'views')); // Look for templates next to this file, not in whatever folder node was started from
+
 
 // Database
-var db = require('./database/db-connector');
+var db = require('./db/db-connector');   // Database connection pool (moved to services/web/db/)
 
 // Static Files
-app.use(express.static('public'));  
+app.use(express.static(path.join(__dirname, 'public')));  // Serve CSS and browser JS from this file's public/ folder
 
 
 /*
     ROUTES
 */
+
+// Send visitors from the root URL to the home page
+app.get('/', function(req, res) {
+    res.redirect('/index');
+});
 
 // GET ROUTES
 app.get('/index', function(req, res) {
