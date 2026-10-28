@@ -12,17 +12,18 @@ Runs on port 5000.
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
+import os
 
 
 app = Flask(__name__)
 CORS(app)
 
-# Database configuration - update these with your actual credentials
+# Database settings come from environment variables
 db_config = {
-    'user' : '',
-    'password' : '',
-    'host' : '',
-    'database' : ''
+    "user": os.environ.get("DB_USER", ""),
+    "password": os.environ.get("DB_PASSWORD", ""),
+    "host": os.environ.get("DB_HOST", "localhost"),
+    "database": os.environ.get("DB_NAME", ""),
 }
 
 
