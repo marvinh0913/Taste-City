@@ -1,0 +1,5 @@
+sort_server
+*.dSYM
+build
+Dockerfile
+.dockerignore

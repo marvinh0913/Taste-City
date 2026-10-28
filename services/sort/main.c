@@ -36,7 +36,7 @@ void handle_client(int client_socket) {
     snprintf(response, BUFFER_SIZE,
              "HTTP/1.1 200 OK\r\n"
              "Content-Type: application/json\r\n"
-             "Content-Length: %ld\r\n"
+             "Content-Length: %zu\r\n"
              "\r\n"
              "%s", strlen(response_json), response_json);
 
@@ -46,6 +46,10 @@ void handle_client(int client_socket) {
 }
 
 int main() {
+    // Print log lines immediately; Docker captures stdout through a pipe,
+    // where C would otherwise buffer output until several KB accumulate
+    setvbuf(stdout, NULL, _IONBF, 0);
+    
     int server_fd, client_socket;
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(client_addr);
@@ -56,6 +60,10 @@ int main() {
         perror("Socket creation failed");
         exit(EXIT_FAILURE);
     }
+
+    // Let the port be reused immediately after a restart
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     // Configure server
     server_addr.sin_family = AF_INET;
