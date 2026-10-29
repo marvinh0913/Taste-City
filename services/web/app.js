@@ -21,7 +21,6 @@ const USERS_SERVICE_URL = process.env.USERS_SERVICE_URL || 'http://localhost:500
 
 // Handlebars
 const { engine } = require('express-handlebars');
-var exphbs = require('express-handlebars');      // Import express-handlebars
 app.engine('.hbs', engine({extname: ".hbs"}));   // Create an instance of the handlebars engine to process templates
 app.set('view engine', '.hbs');                  // Tell express to use the handlebars engine whenever it encounters a *.hbs file.
 app.set('views', path.join(__dirname, 'views')); // Look for templates next to this file, not in whatever folder node was started from
