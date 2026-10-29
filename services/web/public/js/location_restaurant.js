@@ -1,6 +1,6 @@
 async function fetchStates() {
     try {
-      const response = await fetch('http://localhost:2212/states');
+      const response = await fetch('/api/location/states');
       const data = await response.json();
       const stateSelect = document.getElementById("stateSelect");
   
@@ -28,7 +28,7 @@ async function fetchStates() {
     if (!state) return; // No state selected
   
     try {
-      const response = await fetch(`http://localhost:2212/states/${state}/cities`);
+      const response = await fetch(`/api/location/states/${state}/cities`);
       const data = await response.json();
       if (data.cities) {
         data.cities.forEach(city => {
