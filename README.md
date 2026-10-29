@@ -8,19 +8,24 @@ Originally a class project on microservices, Taste City has since been container
 
 ```mermaid
 flowchart LR
-    Browser --> Nginx["Nginx<br/>(reverse proxy + load balancer)"]
-    Nginx --> Web1["web-1"]
-    Nginx --> Web2["web-2"]
-    Nginx -->|/api/location| Loc1["location-1"]
-    Nginx -->|/api/location| Loc2["location-2"]
-    Web1 & Web2 --> Sort["sort (C)"]
-    Web1 & Web2 --> Spell["spellcheck"]
+    Browser --> Public["Nginx :8080<br/>(public entry point)"]
+    Public --> Web1["web-1"]
+    Public --> Web2["web-2"]
+    Public -->|/api/location| Loc1["location-1"]
+    Public -->|/api/location| Loc2["location-2"]
+
+    Web1 & Web2 --> Internal["Nginx :5527 / :3000<br/>(internal entry points)"]
+    Internal -->|:5527| Sort1["sort-1 (C)"]
+    Internal -->|:5527| Sort2["sort-2 (C)"]
+    Internal -->|:3000| Spell1["spellcheck-1"]
+    Internal -->|:3000| Spell2["spellcheck-2"]
+
     Web1 & Web2 --> Users["users"]
     Web1 & Web2 --> DB[("MariaDB")]
     Users --> DB
 ```
 
-Nginx is the only service reachable from outside Docker. Everything else is reachable only by other containers, on a private Docker network.
+Both Nginx boxes are the same container, listening on several ports: 8080 is published for the browser, while 5527 and 3000 are reachable only inside Docker.
 
 | Service | Language | Port | Role |
 |---|---|---|---|
@@ -34,12 +39,13 @@ Nginx is the only service reachable from outside Docker. Everything else is reac
 
 ## Load Balancing
 
-`web` and `location` each run **two replicas**. Nginx distributes requests between them:
+`web`, `location`, `sort`, and `spellcheck` each run **two replicas**. Nginx distributes requests between them:
 
 - **Round robin:** requests alternate between replicas.
 - **Service discovery:** Nginx finds replicas through Docker's internal DNS, re-checking every 10 seconds, so scaling up or down needs no config change.
 - **Passive health checks and failover:** if a replica fails twice, Nginx stops sending it traffic for 10 seconds, and retries the failed request on another replica, so users don't see the error.
 - **Startup health checks:** Docker Compose starts Nginx only after every replica passes its health check.
+- **Safe retries:** failed requests to the sort and spellcheck services are retried on another replica, even though they're `POST` requests, because neither has side effects. Requests that change data, like adding a restaurant, are never retried automatically.
 
 Both services are **stateless**: each replica can handle any request, since data lives in MariaDB, not in memory. That's what makes load balancing them safe without sticky sessions.
 
@@ -51,6 +57,12 @@ With the app running, send several requests and check which replica answers. Ngi
 for i in 1 2 3 4 5 6; do
   curl -s -o /dev/null -D - http://localhost:8080/api/location/states | grep -i x-upstream
 done
+```
+
+The sort and spellcheck services aren't reachable from outside Docker, so check them from inside the web container:
+
+```bash
+docker compose exec web node -e "fetch('http://nginx:3000/spellcheck', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text: 'resturant'})}).then(r => console.log(r.headers.get('x-upstream')))"
 ```
 
 The two addresses alternate. To see failover, stop one replica and run the loop again. Every request still succeeds, served by the remaining replica:
