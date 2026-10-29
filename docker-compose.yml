@@ -51,10 +51,26 @@ services:
   # ─── Internal services (reachable only by other containers) ───────────
   sort:
     build: ./services/sort
+    deploy:
+      replicas: 2
+    healthcheck:
+      # The image has no curl or Python, so use bash's built-in
+      # /dev/tcp to check that the port accepts connections
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/5527"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   spellcheck:
     build: ./services/spellcheck
+    deploy:
+      replicas: 2
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   users:
@@ -93,6 +109,10 @@ services:
         condition: service_healthy
       location:
         condition: service_healthy
+      sort:
+        condition: service_healthy
+      spellcheck:
+        condition: service_healthy  
     restart: unless-stopped  
 
 volumes:
