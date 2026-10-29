@@ -22,6 +22,8 @@ services:
   # ─── Main web app (the only service the browser uses, plus location) ──
   web:
     build: ./services/web
+    deploy:
+      replicas: 2
     environment:
       SORT_SERVICE_URL: http://sort:5527
       SPELLCHECK_SERVICE_URL: http://spellcheck:3000
@@ -65,6 +67,8 @@ services:
   # ─── Location  ─────────────────────
   location:
     build: ./services/location
+    deploy:
+      replicas: 2
     restart: unless-stopped
 
     # ─── Entry point: the only service published to the host ──────────────
