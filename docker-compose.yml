@@ -1,0 +1,75 @@
+services:
+  # ─── Database ───────────────────────────────────────────────────────
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      # Keep the data between restarts
+      - db-data:/var/lib/mysql
+      # Create the tables the first time the database starts
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # ─── Main web app (the only service the browser uses, plus location) ──
+  web:
+    build: ./services/web
+    ports:
+      - "57891:57891"
+    environment:
+      SORT_SERVICE_URL: http://sort:5527
+      SPELLCHECK_SERVICE_URL: http://spellcheck:3000
+      USERS_SERVICE_URL: http://users:5000
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
+      sort:
+        condition: service_started
+      spellcheck:
+        condition: service_started
+      users:
+        condition: service_started
+    restart: unless-stopped
+
+  # ─── Internal services (reachable only by other containers) ───────────
+  sort:
+    build: ./services/sort
+    restart: unless-stopped
+
+  spellcheck:
+    build: ./services/spellcheck
+    restart: unless-stopped
+
+  users:
+    build: ./services/users
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ─── Location (published until Nginx is in front) ─────────────────────
+  location:
+    build: ./services/location
+    ports:
+      - "2212:2212"
+    restart: unless-stopped
+
+volumes:
+  db-data:
