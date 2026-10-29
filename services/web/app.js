@@ -13,7 +13,11 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-PORT = 57891;                                  // Set a port number at the top so it's easy to change in the future
+// Configuration: read from environment variables, with defaults for local development
+const PORT = process.env.PORT || 57891;
+const SORT_SERVICE_URL = process.env.SORT_SERVICE_URL || 'http://localhost:5527';
+const SPELLCHECK_SERVICE_URL = process.env.SPELLCHECK_SERVICE_URL || 'http://localhost:3000';
+const USERS_SERVICE_URL = process.env.USERS_SERVICE_URL || 'http://localhost:5000';                                  
 
 // Handlebars
 const { engine } = require('express-handlebars');
@@ -166,7 +170,7 @@ app.post('/fetch-restaurants', async function(req, res) {
 
         try {
             // Send FULL restaurant objects to the C microservice
-            const response = await fetch('http://localhost:5527', {
+            const response = await fetch(SORT_SERVICE_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -200,7 +204,7 @@ app.post('/spellcheck', async (req, res) => {
 
     try {
       // Forward the request to the Python spellchecker microservice
-      const response = await fetch('http://localhost:3000/spellcheck', {
+      const response = await fetch(`${SPELLCHECK_SERVICE_URL}/spellcheck`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: req.body.text })
@@ -252,7 +256,7 @@ app.post('/login', async (req, res) => {
   console.log("Received credentials:", username, password);  // Debug log
   
   try {
-    const response = await fetch('http://127.0.0.1:5000/verify-user', {
+    const response = await fetch(`${USERS_SERVICE_URL}/verify-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
