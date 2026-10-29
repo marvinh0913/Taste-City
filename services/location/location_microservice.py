@@ -59,5 +59,11 @@ def get_cities(state_name):
     return jsonify({"state": state_name, "cities": cities})
 
 
+@app.route('/health', methods=['GET'])
+def health():
+    """Report that the service is running (used by Docker health checks)."""
+    return jsonify({"status": "ok"})
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=2212)

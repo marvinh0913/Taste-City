@@ -108,6 +108,11 @@ app.get('/restaurants', (req, res) => {
     });
   });
 
+// Report that the service is running (used by Docker health checks)
+app.get('/health', function(req, res) {
+    res.json({ status: 'ok' });
+});
+
 // POST ROUTES
 app.post('/add-user-ajax', function(req, res) {
     let data = req.body;

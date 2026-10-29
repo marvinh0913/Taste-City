@@ -24,6 +24,11 @@ services:
     build: ./services/web
     deploy:
       replicas: 2
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:57891/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 5  
     environment:
       SORT_SERVICE_URL: http://sort:5527
       SPELLCHECK_SERVICE_URL: http://spellcheck:3000
@@ -69,6 +74,11 @@ services:
     build: ./services/location
     deploy:
       replicas: 2
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:2212/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5  
     restart: unless-stopped
 
     # ─── Entry point: the only service published to the host ──────────────
@@ -79,8 +89,10 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - web
-      - location
+      web:
+        condition: service_healthy
+      location:
+        condition: service_healthy
     restart: unless-stopped  
 
 volumes:
