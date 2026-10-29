@@ -31,6 +31,21 @@ void handle_client(int client_socket) {
     // Call the `sort()` function
     char* response_json = sort(json_start);
 
+    // Invalid request: reply with 400 instead of crashing
+    if (response_json == NULL) {
+        const char* body = "{\"status\": \"error\", \"message\": \"Invalid sort request\"}";
+        char error_response[256];
+        snprintf(error_response, sizeof(error_response),
+                 "HTTP/1.1 400 Bad Request\r\n"
+                 "Content-Type: application/json\r\n"
+                 "Content-Length: %zu\r\n"
+                 "\r\n"
+                 "%s", strlen(body), body);
+        send(client_socket, error_response, strlen(error_response), 0);
+        close(client_socket);
+        return;
+    }
+
     // Send HTTP response
     char response[BUFFER_SIZE];
     snprintf(response, BUFFER_SIZE,

@@ -127,51 +127,91 @@ char* build_str_from_str(char** arr, int size) {
     return str;
 }
 
+// Return 1 if every item in the array is a string, otherwise 0
+static int all_strings(const cJSON* items) {
+    const cJSON* item;
+    cJSON_ArrayForEach(item, items) {
+        if (!cJSON_IsString(item)) return 0;
+    }
+    return 1;
+}
+
+// Return 1 if every item in the array is a number, otherwise 0
+static int all_numbers(const cJSON* items) {
+    const cJSON* item;
+    cJSON_ArrayForEach(item, items) {
+        if (!cJSON_IsNumber(item)) return 0;
+    }
+    return 1;
+}
+
+// Parse and sort a request body. Returns the sorted JSON as a newly
+// allocated string, or NULL if the request is invalid.
 char* parse(const char* body) {
     cJSON* body_json = cJSON_Parse(body);
     if (body_json == NULL) {
         fprintf(stderr, "Failed to parse JSON\n");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
 
     const cJSON* type = cJSON_GetObjectItemCaseSensitive(body_json, "type");
     const cJSON* items = cJSON_GetObjectItemCaseSensitive(body_json, "items");
+
+    if (!cJSON_IsArray(items)) {
+        fprintf(stderr, "Missing or invalid items field\n");
+        cJSON_Delete(body_json);
+        return NULL;
+    }
     int array_len = cJSON_GetArraySize(items);
 
     // Check if the first item is an object (full restaurant record)
     cJSON* first_item = cJSON_GetArrayItem(items, 0);
     if (first_item && cJSON_IsObject(first_item)) {
-        // Extract the sortBy field from the request
         cJSON* sortBy = cJSON_GetObjectItemCaseSensitive(body_json, "sortBy");
-        if (!sortBy || !cJSON_IsString(sortBy)) {
+        if (!cJSON_IsString(sortBy)) {
             fprintf(stderr, "Missing or invalid sortBy field\n");
             cJSON_Delete(body_json);
-            exit(EXIT_FAILURE);
+            return NULL;
         }
         char* response = sort_objects(items, array_len, sortBy->valuestring);
         cJSON_Delete(body_json);
         return response;
     }
 
-    // Fallback: handle simple strings or numbers as before
+    // Simple lists of strings or numbers need a valid type
+    if (!cJSON_IsString(type)) {
+        fprintf(stderr, "Missing or invalid type field\n");
+        cJSON_Delete(body_json);
+        return NULL;
+    }
+
     if (strcmp("NUMBER", type->valuestring) == 0) {
+        if (!all_numbers(items)) {
+            fprintf(stderr, "NUMBER sort requires numeric items\n");
+            cJSON_Delete(body_json);
+            return NULL;
+        }
         int* array = parse_integers(items, array_len);
         sort_numbers(array, array_len);
         cJSON_Delete(body_json);
-        char* response = build_str_from_int_arr(array, array_len);
-        return response;
+        return build_str_from_int_arr(array, array_len);
     }
+
     if (strcmp("ALPHA", type->valuestring) == 0 || strcmp("CHRONO", type->valuestring) == 0) {
+        if (!all_strings(items)) {
+            fprintf(stderr, "ALPHA and CHRONO sorts require string items\n");
+            cJSON_Delete(body_json);
+            return NULL;
+        }
         char** array = parse_strings(items, array_len);
         sort_alpha(array, array_len);
         cJSON_Delete(body_json);
-        char* response = build_str_from_str(array, array_len);
-        return response;
+        return build_str_from_str(array, array_len);
     }
 
     fprintf(stderr, "Sorting type not understood\n");
     cJSON_Delete(body_json);
-    exit(EXIT_FAILURE);
+    return NULL;
 }
 
 int compare_restaurants(const void* a, const void* b) {
